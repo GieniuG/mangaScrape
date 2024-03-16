@@ -95,5 +95,3 @@ Contributions and new ideas are appreciated, so if you want something to be adde
 
 DISCORD: gieniu_g
 
-E-MAIL: example@email.com
-
