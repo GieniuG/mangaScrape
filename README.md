@@ -2,7 +2,6 @@
 	<img src="assets/logo.png">
 </p>
 
----
 
 ## TABLE OF CONTENTS
 - [GETTING STARTED](#getting-started)
@@ -14,7 +13,6 @@
 - [CONTRIBUTIONS](#contributions)
 - [CONTACT](#contact)
 
----
 
 ## GETTING STARTED
 
@@ -51,7 +49,6 @@ Coming soon.
 
 It might take a while, but I'm planning to do that too.
 
----
 
 ## USAGE
 
@@ -88,13 +85,11 @@ You don't need to use the flags at all; it will ask you for the stuff it needs, 
 - You want to check if manga you downloaded has new chapters:
   `mangaScrape -U`
 
----
 
 ## CONTRIBUTIONS
 
 Contributions and new ideas are appreciated, so if you want something to be added, feel free to suggest it.
 
----
 
 ## CONTACT
 
