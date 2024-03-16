@@ -32,16 +32,18 @@ If you're using a Chromium-based browser, you don't need to perform the first st
    ```
 
 3. While in the same folder as this script, run:
+ ```
    chmod +x LINUX-install.sh
    ./LINUX-install.sh
+ ```
 You're good to go!
 
-Build from source:
+*Build from source:*
 
 1. Install Node.js and run 
 ```
 sudo npm install -g pkg
-```.
+```
 2. Run the install script to create necessary directories and files.
 3. ```
    chmod +x LINUX-compile.sh
