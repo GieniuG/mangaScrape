@@ -2,6 +2,7 @@
 	<img src="assets/logo.png">
 </p>
 
+
 ## TABLE OF CONTENTS
 
 - [GETTING STARTED](#getting-started)
@@ -97,6 +98,11 @@ You don't need to use the flags at all; it will ask you for the stuff it needs, 
   `mangaScrape -U`
 
 After downloading your manga will be at `~/.mangaScrape/Downloaded Manga` by default
+
+<p align="center">
+<img src="assets/output.gif">
+</p>
+
 ## FEATURES
 
 - Order download of multiple chapters at once
