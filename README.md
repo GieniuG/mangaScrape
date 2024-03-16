@@ -2,8 +2,8 @@
 	<img src="assets/logo.png">
 </p>
 
-
 ## TABLE OF CONTENTS
+
 - [GETTING STARTED](#getting-started)
   - [INSTALLATION](#installation)
     - [LINUX](#linux)
@@ -14,7 +14,6 @@
 - [CONTRIBUTIONS](#contributions)
 - [CONTACT](#contact)
 
-
 ## GETTING STARTED
 
 ### INSTALLATION
@@ -23,27 +22,30 @@
 
 If you're using a Chromium-based browser, you don't need to perform the first step:
 
-1. Install Node.js from [Node.js website](https://nodejs.org/) and run `npx @puppeteer/browsers install chrome-headless-shell@stable` to download the browser this program will be using.
-
+1. Install Node.js from [Node.js website](https://nodejs.org/) and run (while in the directory containing .js file) `npx @puppeteer/browsers install chrome-headless-shell@stable` to download the browser this program will be using.
 2. Go into LINUX `scripts/LINUX-install.sh` and remove the comments.
-   If you want to use your browser instead of downloading headless chrome, run `which browser_name` and change the `pathToBrowser` at line 14 to the output of this command. For example, for Brave: 
+   If you want to use your browser instead of downloading headless chrome, run `which browser_name` and change the `pathToBrowser` at line 14 to the output of this command. For example, for Brave:
+
    ```
    pathToBrowser="/usr/bin/brave"
    ```
+3. While in the main directory (with the .js file), run:
 
-3. While in the same folder as this script, run:
- ```
-   chmod +x LINUX-install.sh
-   ./LINUX-install.sh
- ```
+```
+   chmod +x LINUX\ scrpits/LINUX-install.sh
+   LINUX\ scrpits/LINUX-install.sh
+```
+
 You're good to go!
 
 *Build from source:*
 
-1. Install Node.js and run 
+1. Install Node.js and run
+
 ```
 sudo npm install -g pkg
 ```
+
 2. Run the install script to create necessary directories and files.
 3. ```
    chmod +x LINUX-compile.sh
@@ -58,12 +60,12 @@ Coming soon.
 
 It might take a while, but I'm planning to do that too.
 
-
 ## USAGE
 
 Usage: mangaScrape flags
 
 Flags:
+
 ```
 -U   Check for new chapters. If used alone, it will only check for updates.
          When used with `-D`, it will automatically download new chapters.
@@ -84,28 +86,26 @@ Flags:
   
 -h   Display this help message.
 ```
+
 You don't need to use the flags at all; it will ask you for the stuff it needs, so you don't have to worry too much about it.
 
 **EXAMPLES:**
 
 - You only know that you want to download chapters from 1 to 10 of Naruto, but you don't know the index:
   `mangaScrape -n Naruto -c 1-10`
-  
 - You want to check if manga you downloaded has new chapters:
   `mangaScrape -U`
 
 ## FEATURES
 
-- Order download of multiple chapters at once 
+- Order download of multiple chapters at once
 - Checks for new chapters
-- Easy integration with scripts for automation 
+- Easy integration with scripts for automation
 
 ## CONTRIBUTIONS
 
 Contributions and new ideas are appreciated, so if you want something to be added, feel free to suggest it.
 
-
 ## CONTACT
 
 DISCORD: gieniu_g
-
