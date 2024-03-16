@@ -20,12 +20,15 @@
 
 #### LINUX
 
-If you're using a Chromium-based browser, you don't need to perform the following step:
+If you're using a Chromium-based browser, you don't need to perform the first step:
 
 1. Install Node.js from [Node.js website](https://nodejs.org/) and run `npx @puppeteer/browsers install chrome-headless-shell@stable` to download the browser this program will be using.
 
 2. Go into LINUX `scripts/LINUX-install.sh` and remove the comments.
-   If you want to use your browser instead of downloading headless chrome, run `which browser_name` and change the `pathToBrowser` at line 14 to the output of this command. For example, for Brave: `pathToBrowser="/usr/bin/brave"`.
+   If you want to use your browser instead of downloading headless chrome, run `which browser_name` and change the `pathToBrowser` at line 14 to the output of this command. For example, for Brave: 
+   ```
+   pathToBrowser="/usr/bin/brave"
+   ```
 
 3. While in the same folder as this script, run:
    chmod +x LINUX-install.sh
@@ -79,7 +82,7 @@ You don't need to use the flags at all; it will ask you for the stuff it needs, 
 
 **EXAMPLES:**
 
-- You only know that you want to download chapters from 1 to 10 of Naruto, but you don't know its index:
+- You only know that you want to download chapters from 1 to 10 of Naruto, but you don't know the index:
   `mangaScrape -n Naruto -c 1-10`
   
 - You want to check if manga you downloaded has new chapters:
