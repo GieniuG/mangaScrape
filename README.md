@@ -100,7 +100,7 @@ You don't need to use the flags at all; it will ask you for the stuff it needs, 
 After downloading your manga will be at `~/.mangaScrape/Downloaded Manga` by default
 
 <p align="center">
-<img src="assets/output.gif">
+<img src="assets/usage.gif">
 </p>
 
 ## FEATURES
