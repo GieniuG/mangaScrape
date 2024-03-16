@@ -10,6 +10,7 @@
     - [WINDOWS](#windows)
     - [MAC](#mac)
 - [USAGE](#usage)
+- [FEATURES](#features)
 - [CONTRIBUTIONS](#contributions)
 - [CONTACT](#contact)
 
@@ -37,7 +38,10 @@ You're good to go!
 
 Build from source:
 
-1. Install Node.js and run `sudo npm install -g pkg`.
+1. Install Node.js and run 
+```
+sudo npm install -g pkg
+```.
 2. Run the install script to create necessary directories and files.
 3. ```
    chmod +x LINUX-compile.sh
@@ -88,6 +92,11 @@ You don't need to use the flags at all; it will ask you for the stuff it needs, 
 - You want to check if manga you downloaded has new chapters:
   `mangaScrape -U`
 
+## FEATURES
+
+- Order download of multiple chapters at once 
+- Checks for new chapters
+- Easy integration with scripts for automation 
 
 ## CONTRIBUTIONS
 
