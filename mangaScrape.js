@@ -87,7 +87,7 @@ async function scrape(url,chapter) {
             await page.goto(`${url}/c${chapter}`)
             await page.waitForSelector('.wrap_img');
             try{
-                print(`chapter:${chapter}/${endChapter}\ngeting images...`)
+                print(`chapter:${chapter}/${endChapter}\ngetting images...`)
                 var html = await page.content()
             } catch(error){
                 console.log("puppeteer error:",error)

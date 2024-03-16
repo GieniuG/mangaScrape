@@ -10,7 +10,7 @@ echo "check that file for a moment!!"
 # mkdir $HOME/.mangaScrape/
 # mkdir "$HOME/.mangaScrape/Downloaded Manga"
 # echo "[]" > "$HOME/.mangaScrape/Downloaded Manga/library.json"
-# cp -r ../chrome-headless-shell $HOME/.mangaScrape/
+# cp -r chrome-headless-shell $HOME/.mangaScrape/
 # pathToBrowser=`find $HOME/.mangaScrape/chrome-headless-shell/linux-*/chrome-headless-shell-linux64/chrome-headless-shell`
 # mkdir $HOME/.config/mangaScrape/
 # echo "{
@@ -19,4 +19,4 @@ echo "check that file for a moment!!"
 # \"doneMessage\":\"Everything done. Happy reading!\",
 # \"pathToBrowser\":\"$pathToBrowser\"
 # }" > $HOME/.config/mangaScrape/config.json
-# sudo cp ../mangaScrape /usr/local/bin
+# sudo cp mangaScrape /usr/local/bin
