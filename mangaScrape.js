@@ -17,9 +17,12 @@ let latestChapter
 let pathToDownloadDir
 let howManyTitles
 let doneMessage
+let pathToBrowser
+
 const platform=os.platform()
 if(platform=="win32"){
-   
+    getConfig(`C:\\Program Files\\mangaScrape\\.config.json`)
+
 }else if(platform=="linux"){
    getConfig(`${process.env.HOME}/.config/mangaScrape/config.json`)
 }else if(platform=="darwin"){
@@ -64,10 +67,9 @@ async function search(name){
 
 
 async function scrape(url,chapter) {
-    const homeDirectory = process.env.HOME
     const browser=await puppeteer.launch({
         headless: 'shell',
-        executablePath:`${homeDirectory}/.mangaScrape/chrome-headless-shell/linux-122.0.6261.111/chrome-headless-shell-linux64/chrome-headless-shell`
+        executablePath: pathToBrowser
     })
     const page= await browser.newPage()
     let startChapter
@@ -88,20 +90,24 @@ async function scrape(url,chapter) {
                 print(`chapter:${chapter}/${endChapter}\ngeting images...`)
                 var html = await page.content()
             } catch(error){
-                console.log("error:",error)
+                console.log("puppeteer error:",error)
             }
-            fs.mkdir(`${chosenMangaDir}/Chapter${chapter}`, err=>err?console.log(err):"")                           //create a directory 
+            fs.mkdir(`${chosenMangaDir}/Chapter${chapter}`, err=>err?console.log("MKDIR  ERROR:",err):"")                           //create a directory 
 
                 const $=cheerio.load(html,null,false)
-                $(".wrap_img img").toArray().forEach((image,index)=>{
-                   src=$(image).attr("data-src")                                                                        //get source url 
-                    https.get(src,response=>{                                                                           //fetch image data
-                        const writer=fs.createWriteStream(`${chosenMangaDir}/Chapter${chapter}/page${index+1}.jpg`)     //create a stream to save image data to a file
-                        response.pipe(writer)                                                                           //write a file    
-                    })   
+                const wrappers=$(".wrap_img img").toArray()
+                const numberOfPages=wrappers.length
+                wrappers.forEach((image,index)=>{
+                   src=$(image).attr("data-src")                                         //get source url 
+                   https.get(src,response=>{                                             //fetch image data
+                        const writer=fs.createWriteStream(`${chosenMangaDir}/Chapter${chapter}/page${index+1}.jpg`)      //create a stream to save image data to a file
+                        response.pipe(writer)                                                                          //write a file    
+                    })
                 })                                                    
             pathToChapter=`${chosenMangaDir}/Chapter${chapter}`
-                await pause(5000)                                                                                   //pause, so that images can render
+                await validateDownload(numberOfPages,pathToChapter)
+                    .catch(error=>console.log("error validating download",error))
+                await pause(2500)                                                                                   //pause, so that images can render
                 await archive(pathToChapter)                                                                        //create .cbz file
                 remove(pathToChapter)                                                                               //remove directory
                 print("done")
@@ -141,7 +147,7 @@ function archive(pathToChapter){                                                
 
 function remove(pathToChapter){                                                                       //delete directory
     fs.rm(pathToChapter,{recursive: true}, err=>{
-        err?console.log(err):""
+        err?console.log("removerERROR: ",err):""
     })
 }
 function pause(time){
@@ -149,7 +155,21 @@ function pause(time){
         setTimeout(resolve,time)
     })
 }
-
+function validateDownload(numberOfPages,pathToChapter){
+    return new Promise((resolve,reject)=>{
+        const loop=()=>{
+            fs.readdir(pathToChapter,(err,files)=>{
+                const numberOfFiles=files.length
+                if(numberOfFiles==numberOfPages){
+                    resolve()
+                }else{
+                    loop()
+                }
+            })
+        }
+        loop()
+    })
+}
 
 function prepairStructure(chosenManga){
     chosenMangaDir=pathToDownloadDir+`/${titles[chosenManga].name}`
@@ -213,7 +233,7 @@ async function start(passedArguments){
                 break
             case "-h":
                 if(platform=="win32"){
-                    var location='C:\\USER\\ProgarmFiles\\mangaScrape'
+                    var location='C:\\Progarm Files\\mangaScrape'
                 }else if(platform=="linux"){
                     var location=`${process.env.HOME}/.config/mangaScrape`
                 }
@@ -363,4 +383,5 @@ function getConfig(path){
     pathToDownloadDir=jsonFile.pathToDownloadDir
     howManyTitles=jsonFile.howManyTitles
     doneMessage=jsonFile.doneMessage
+    pathToBrowser=jsonFile.pathToBrowser
 }
