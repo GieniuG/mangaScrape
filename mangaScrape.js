@@ -322,7 +322,7 @@ Flags:
 Additional Notes:
 - If you can't find your manga on the site, consider using the -u flag with the manga's URL.
 - You can adjust the number of titles to search for by changing the "howManyTitles" value in the config file located at ${location}.
-- Modify the end message in the config file. Set it to null to disable the end message.
+- You can modify the end message in the config file.
 `)
 }
 start(args)
