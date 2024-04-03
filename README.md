@@ -109,7 +109,7 @@ After downloading your manga will be at `~/.mangaScrape/Downloaded Manga` by def
 
 ## FEATURES
 
-- Order download of multiple chapters at once
+- Batch download
 - Checks for new chapters
 - Easy integration with scripts for automation
 
