@@ -231,6 +231,12 @@ async function start(passedArguments){
                 shouldPrint=false
                 i--
                 break
+            case "-l":
+                changeScanStatus(false)
+                return
+            case "-m":
+                changeScanStatus(true)
+                return
             case "-h":
                 if(platform=="win32"){
                     var location='C:\\Progarm Files\\mangaScrape'
@@ -312,12 +318,14 @@ Flags:
   -D       Automatically download new chapters. Must be used with -U.
   -u       Provide a manga URL. This is useful for scripts. Example: -u https://mangakatana.com/manga/kuroshitsuji.546
   -c       Choose a chapter or range of chapters to download.
-           Single chapter: -c 1
-           Range of chapters: -c 1-10
+              Single chapter: -c 1
+              Range of chapters: -c 1-10
   -n       Choose the name of the manga. Use quotes for multi-word names. Examples: -n Naruto, -n "Fairy Tail"
   -i       Choose the index of the manga. The index is the position it appears when searching its name, starting from 0.
   -s       Silent mode. Only displays errors, prompts for missing parameters, and the end message.
   -h       Display this help message.
+  -l       List name and scan status from library file.
+  -m       Toggle between true and false scan status.
 
 Additional Notes:
 - If you can't find your manga on the site, consider using the -u flag with the manga's URL.
@@ -384,4 +392,58 @@ function getConfig(path){
     howManyTitles=jsonFile.howManyTitles
     doneMessage=jsonFile.doneMessage
     pathToBrowser=jsonFile.pathToBrowser
+}
+
+function changeScanStatus(modify){
+    const pathToDownloadDir="/run/media/Dysk/manga/Downloaded Manga"
+    const jsonString=fs.readFileSync(pathToDownloadDir+"/library.json","utf8")
+    const jsonFile=JSON.parse(jsonString)
+
+
+    let longestNameLength=0
+    jsonFile.forEach((element)=>{
+        if(element.name.length>longestNameLength){
+            longestNameLength=element.name.length
+        }
+    })
+    
+    let tableHead={
+        index:"index",
+        name:"",
+        scan:"scan status",
+        newestChapter:0
+    }
+    for(let i=0;i<parseInt((longestNameLength-4)/2);i++){
+        tableHead.name+=" "
+    }
+    tableHead.name+="name"
+    for(let i=0;i<parseInt((longestNameLength-5)/2);i++){
+        tableHead.name+=" "
+    }
+    console.log(`${tableHead.index} | ${tableHead.name}  | ${tableHead.scan}`)
+    let divider=""
+    for(let i=0;i<longestNameLength+22;i++){
+        if(i==6 || i==longestNameLength+9) divider+="+"
+        else divider+="-"
+    }
+    console.log(divider)
+    // disaply everything \/
+    jsonFile.forEach(async (element,index)=>{
+        let name=element.name
+        for(let i=0;i<longestNameLength-element.name.length;i++){
+            name+=" "
+        }
+        for(let i=0;i<8-String(index).length;i++){
+            index+=" "
+        }
+        console.log(index,"|",name,"|",element.scan)
+    })
+
+
+    if(modify){
+        const chosenIndex=readlineSync.question("\nWhat manga do you want to change? (index): ")
+        jsonFile[chosenIndex].scan=jsonFile[chosenIndex].scan?false:true
+        const jsonData = JSON.stringify(jsonFile,null,2)
+        fs.writeFile("test.json",jsonData,err=>err?console.log(err):"")
+    }
 }

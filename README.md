@@ -86,6 +86,10 @@ Flags:
 -s   Silent mode. Only displays errors, prompts for missing parameters, and the end message.
   
 -h   Display this help message.
+
+-l   List name and scan status from library file.
+
+-m   Toggle between true and false scan status.
 ```
 
 You don't need to use the flags at all; it will ask you for the stuff it needs, so you don't have to worry too much about it.
