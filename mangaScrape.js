@@ -395,7 +395,6 @@ function getConfig(path){
 }
 
 function changeScanStatus(modify){
-    const pathToDownloadDir="/run/media/Dysk/manga/Downloaded Manga"
     const jsonString=fs.readFileSync(pathToDownloadDir+"/library.json","utf8")
     const jsonFile=JSON.parse(jsonString)
 
@@ -443,7 +442,8 @@ function changeScanStatus(modify){
     if(modify){
         const chosenIndex=readlineSync.question("\nWhat manga do you want to change? (index): ")
         jsonFile[chosenIndex].scan=jsonFile[chosenIndex].scan?false:true
+
         const jsonData = JSON.stringify(jsonFile,null,2)
-        fs.writeFile("test.json",jsonData,err=>err?console.log(err):"")
+        fs.writeFile(pathToDownloadDir+"/library.json",jsonData,err=>err?console.log(err):"")
     }
 }
