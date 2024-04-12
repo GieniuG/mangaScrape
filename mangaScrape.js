@@ -362,6 +362,12 @@ for(const manga of jsonFile){
             })
             let newestDownloadedChapter=Number(Math.max(...files))
             
+            if($(".status").html()=="Completed"){
+                print(`${manga.name} is completed. Changing scan status in the library ...`)
+                jsonFile[jsonFile.indexOf(manga)].scan=false
+                fs.writeFile(pathToDownloadDir+"/library.json",JSON.stringify(jsonFile,null,2),(error)=>error?console.log(error):"")
+            }
+            
             let newChapter=Number($("table .chapter a").html().split(" ")[1].replace(":",""))
             if(newestDownloadedChapter<newChapter){
                 titles.push({
