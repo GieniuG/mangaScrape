@@ -90,6 +90,11 @@ Flags:
 -l   List name and scan status from library file.
 
 -m   Toggle between true and false scan status.
+
+-t   Set the step interval for chapter checking. The lowest step is 0.01. 
+            Example: -t 0.5 wich for range of chapters from 1 to 3 will check 1.5, 2, 2.5, 3
+-d   Display the newest downloaded chapter for a manga. This feature accommodates minor typos in the manga name for flexible searches.
+
 ```
 
 You don't need to use the flags at all; it will ask you for the stuff it needs, so you don't have to worry too much about it.
