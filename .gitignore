@@ -1,1 +1,4 @@
 chrome-headless-shell/
+node_modules/
+mangaScrape
+node_modules

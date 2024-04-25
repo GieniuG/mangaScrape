@@ -3,9 +3,7 @@ const fs = require('fs')
 const readlineSync = require('readline-sync')                                       //for terminal input
 const JSZip = require("jszip")
 const path = require("path")
-const https = require('https')
 const puppeteer = require("puppeteer-core")
-const request = require('superagent')
 const needle = require('needle')
 const os = require('os')
 const natural = require('natural');                                                 //compare two strings with some tolerance for typos
@@ -21,8 +19,6 @@ let howManyTitles
 let doneMessage
 let pathToBrowser
 
-let step
-
 const platform=os.platform()
 if(platform=="win32"){
     getConfig(`C:\\Program Files\\mangaScrape\\.config.json`)
@@ -35,6 +31,7 @@ if(platform=="win32"){
 
 
 async function search(name){
+    return new Promise((resolve)=>{
     let url="https://mangakatana.com/?search="
     let button
     let nameArray=name.split(" ")
@@ -45,8 +42,8 @@ async function search(name){
         url+=element
     })
     url+="&search_by=book_name"  
-    const response=await request.get(url)
-    const html=response.text
+    needle.get(url,{ follow_max: 5 },(err,response)=>{
+    const html=response.body
     const $=cheerio.load(html,null,false)
     button=$(".bookmark_bt").html() 
     if(button==null){                                                                             //checks if there is more than one manga
@@ -63,33 +60,26 @@ async function search(name){
         print("only one matching")
         titles[0]={
             name:$(".heading").html(),
-            link:response.request.url
+            link:response.url
         }
     }
+    resolve()
+})
+})
 }
 
 
 
-async function scrape(url,chapter){
+async function scrape(chapters){
     const browser=await puppeteer.launch({
         headless: 'shell',
         executablePath: pathToBrowser
     })
-    const page= await browser.newPage()
-    let startChapter
-    let endChapter
+    const page = await browser.newPage()
     print("loading...")
     try {
-        chapterArray=chapter.split("-")
-        startChapter=Number(chapterArray[0])
-        if(chapterArray.length>1){
-            endChapter=Number(chapterArray[1])
-        }else{
-            endChapter=startChapter
-        }
-        for(chapter=startChapter;chapter<=endChapter;chapter+=step){
-            chapter=Math.round(chapter*100)/100     //round chapter number to counter bin to dec conversion not being precise 
-            await page.goto(`${url}/c${chapter}`)
+        for(i=0;i<chapters.length;i++){
+            await page.goto(chapters[i].url)
             await page.waitForSelector('.wrap_img');
             try{
                 var html = await page.content()
@@ -101,17 +91,17 @@ async function scrape(url,chapter){
             const numberOfPages=wrappers.length
 
             if($(wrappers[0]).attr("data-src")!="https://mangakatana.com/imgs/coming_soon.jpg?v=2"){
-            fs.mkdir(`${chosenMangaDir}/Chapter${chapter}`, err=>err?console.log("MKDIR  ERROR:",err):"")                           //create a directory 
-                print(`chapter:${chapter}/${endChapter}\ngetting images...`)
+            fs.mkdir(`${chosenMangaDir}/Chapter${chapters[i].chapter}`, err=>err?console.log("MKDIR  ERROR:",err):"")         //create a directory 
+                print(`progress: ${i+1}/${chapters.length}`)
+                print(`downloading: ${chapters[i].chapter}`)
 
                 wrappers.forEach((image,index)=>{
-                   src=$(image).attr("data-src")                                         //get source url 
-                   https.get(src,response=>{                                             //fetch image data
-                        const writer=fs.createWriteStream(`${chosenMangaDir}/Chapter${chapter}/page${index+1}.jpg`)      //create a stream to save image data to a file
-                        response.pipe(writer)                                                                          //write a file    
-                    })
+                   src=$(image).attr("data-src")                                                                              //get source url 
+                   needle.get(src ,{ responseType: 'buffer' },(error,response)=>{                                             //fetch image data
+                    fs.writeFile(`${chosenMangaDir}/Chapter${chapters[i].chapter}/page${index+1}.jpg`,response.body,err=>err?console.log(err):"")          
+                   })
                 })                                                    
-            pathToChapter=`${chosenMangaDir}/Chapter${chapter}`
+            pathToChapter=`${chosenMangaDir}/Chapter${chapters[i].chapter}`
                 await validateDownload(numberOfPages,pathToChapter)
                     .catch(error=>console.log("error validating download",error))
                 await pause(2500)                                                                                   //pause, so that images can render
@@ -125,6 +115,53 @@ async function scrape(url,chapter){
         console.log(doneMessage)
     }
 }
+
+function getChapters(url,chapter){
+    let finalArray=[]
+    let array=[]
+    let startChapter,endChapter 
+
+    return new Promise((resolve)=>{
+    needle.get(url,(err,response)=>{
+        let html=response.body
+        const $=cheerio.load(html,null,false)
+        let elements=$(".chapters tbody a")
+        elements.each((index,element)=>{
+            let url=$(element).attr("href")
+            let chapter=url.split("/")
+            array.push({
+                chapter:chapter[chapter.length-1].replace("c",""),
+                url:url
+            })
+        })
+    let index=array.length-1
+    if(chapter!="a"){
+            console.log(chapter)
+            let chapterArray=chapter.split("-")
+            startChapter=Number(chapterArray[0])
+            if(chapterArray.length>1){
+                endChapter=Number(chapterArray[1])
+            }else{
+                endChapter=startChapter
+            }
+    }else{
+        startChapter=array[array.length-1].chapter
+        endChapter=array[0].chapter
+    }
+    while(index>=0){
+        if(startChapter<=array[index].chapter){
+        finalArray.push(array[index])
+            if(endChapter==array[index].chapter){
+               break
+            }
+        }
+        index--
+    }
+    resolve(finalArray)
+  })
+ })
+}
+
 function archive(pathToChapter){                                                  //convert to .cbz                                                                        
     const pathToMangaDir=path.join(pathToChapter, "..")
     const zipName = path.basename(pathToChapter)
@@ -179,11 +216,20 @@ function validateDownload(numberOfPages,pathToChapter){
     })
 }
 
-function prepairStructure(chosenManga){
+async function prepairStructure(chosenManga){
     chosenMangaDir=pathToDownloadDir+`/${titles[chosenManga].name}`
     if(!fs.existsSync(chosenMangaDir)){                                                          //if directory for manga does not exist
         fs.mkdir(chosenMangaDir, err=>err?console.log(err):"")                                   //create one
-        append({name:titles[chosenManga].name,link:titles[chosenManga].link})                    //add manga to JSON file
+        needle.get(titles[chosenManga].link,(error,response)=>{
+        const html=response.body
+        const $=cheerio.load(html,null,false)
+        const coverURL=$(`meta[property="og:image"]`).attr("content")
+        needle.get(coverURL,{ responseType: 'buffer' },(error,response)=>{                                                                //fetch image data                                                           
+            fs.writeFile(`${chosenMangaDir}/cover.jpg`,response.body,err=>err?console.log(err):"")          
+        })
+        const status=$(".status").html()
+        append({name:titles[chosenManga].name,link:titles[chosenManga].link,scan:status=="Completed"?false:true})      //add manga to JSON file
+    })
     }  
 }
 function append(object){                                                                          //append name,link and scan to json file
@@ -195,7 +241,6 @@ function append(object){                                                        
             return
         }
     let items=[]
-    object.scan=true
     items=JSON.parse(data)
     items.push(object)
     const jsonData = JSON.stringify(items,null,2)
@@ -235,15 +280,13 @@ async function start(passedArguments){
                     break
                 chosenOptions.index=passedArguments[i+1]
                 break
-            case "-t":
-                if(passedArguments[i+1][0]=="-")
-                    break
-                step=Number(passedArguments[i+1])
-                break
             case "-s":
                 shouldPrint=false
                 i--
                 break
+            case "-a":
+               chosenOptions.chapter="a" 
+            break 
             case "-d":
                 let nameOfTheManga=""
                 if(!passedArguments[i+1] || passedArguments[i+1][0]=="-")
@@ -253,8 +296,7 @@ async function start(passedArguments){
                     console.log(`Your newest downloaded chapter of ${nameOfTheManga} is ${await checkNewestDownloadedChapter(nameOfTheManga)}`)
                 else
                     console.log("No manga of such name")
-            return
-            
+            return 
             case "-l":
                 changeScanStatus(false)
                 return
@@ -275,15 +317,16 @@ async function start(passedArguments){
             case "-U":
                 await checkForUpdate()
                 if(passedArguments.includes("-D")){
+                    let step
                     for(const element of titles){
                         print(element.name)
                         prepairStructure(titles.indexOf(element))
                         if(element.chapter[1].split(".").length>1){
-                            step=Number(element.chapter[1].split(".")[1])/10
+                           step=Number(element.chapter[1].split(".")[1])/10
                         }else{
-                            step=1
+                           step=1
                         }
-                        await scrape(element.url,`${Number(element.chapter[0])+step}-${element.chapter[1]}`)
+                        await scrape(element.url,`${Number(element.chapter[0]+step)}-${element.chapter[1]}`)
                     }
                 }
                 return
@@ -334,7 +377,8 @@ async function start(passedArguments){
         })
         }
         prepairStructure(chosenOptions.index)
-        scrape(titles[chosenOptions.index].link,chosenOptions.chapter)
+        let chapters=await getChapters(titles[chosenOptions.index].link,chosenOptions.chapter)
+        scrape(chapters)
 }
  
 
@@ -355,15 +399,13 @@ Flags:
   -h       Display this help message.
   -l       List name and scan status from library file.
   -m       Toggle between true and false scan status.
-  -t       Set the step interval for chapter checking. The lowest step is 0.01. 
-              Example: -t 0.5 wich for range of chapters from 1 to 3 will check 1.5, 2, 2.5, 3
   -d       Display the newest downloaded chapter for a manga. This feature accommodates minor typos in the manga name for flexible searches.
+  -a       Download all chapters (use insted of -c)
 
 Additional Notes:
-- If you can't find your manga on the site, consider using the -u flag with the manga's URL.
+- If you can't find your manga listed here, consider using the -u flag with the manga's URL.
 - You can adjust the number of titles to search for by changing the "howManyTitles" value in the config file located at ${location}.
 - You can modify the end message in the config file.
-- Set the default step in the config file (defualt: 1)
 `)
 }
 start(args)
@@ -459,7 +501,6 @@ function getConfig(path){
     howManyTitles=jsonFile.howManyTitles
     doneMessage=jsonFile.doneMessage
     pathToBrowser=jsonFile.pathToBrowser
-    step=jsonFile.step
 }
 
 function changeScanStatus(modify){

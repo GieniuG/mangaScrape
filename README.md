@@ -21,20 +21,22 @@
 
 #### LINUX
 
-If you're using a Chromium-based browser, you don't need to perform the first step:
+1. Install Node.js from [Node.js website](https://nodejs.org/)
 
-1. Install Node.js from [Node.js website](https://nodejs.org/) and run (while in the directory containing .js file) `npx @puppeteer/browsers install chrome-headless-shell@stable` to download the browser this program will be using.
-2. Go into `LINUX scripts/LINUX-install.sh` and remove the comments.
-   If you want to use your browser instead of downloading headless chrome, run `which browser_name` and change the `pathToBrowser` at line 14 to the output of this command. For example, for Brave:
+If you're using a Chromium-based browser, you don't need to perform the next step:
+
+2. Run (while in the directory containing .js file) `npx @puppeteer/browsers install chrome-headless-shell@stable` to download the browser this program will be using.
+3. Go into `LINUX scripts/LINUX-install.sh` and remove the comments.
+   If you want to use your browser instead of downloading headless chrome, run `which browser_name` and change the `pathToBrowser` at line 15 to the output of this command. For example, for Brave:
 
    ```
    pathToBrowser="/usr/bin/brave"
    ```
-3. While in the main directory (with the .js file), run:
+4. While in the main directory (with the .js file), run:
 
 ```
-   chmod +x LINUX\ scrpits/LINUX-install.sh
-   LINUX\ scrpits/LINUX-install.sh
+   chmod +x LINUX-install.sh
+   ./LINUX-install.sh
 ```
 
 You're good to go!
@@ -91,10 +93,9 @@ Flags:
 
 -m   Toggle between true and false scan status.
 
--t   Set the step interval for chapter checking. The lowest step is 0.01. 
-            Example: -t 0.5 wich for range of chapters from 1 to 3 will check 1.5, 2, 2.5, 3
 -d   Display the newest downloaded chapter for a manga. This feature accommodates minor typos in the manga name for flexible searches.
 
+-a   Download all chapters (use insted of -c)
 ```
 
 You don't need to use the flags at all; it will ask you for the stuff it needs, so you don't have to worry too much about it.
@@ -106,7 +107,6 @@ You don't need to use the flags at all; it will ask you for the stuff it needs, 
 - You want to check if manga you downloaded has new chapters:
   `mangaScrape -U`
 
-After downloading your manga will be at `~/.mangaScrape/Downloaded Manga` by default
 
 <p align="center">
 <img src="assets/usage.gif">
@@ -117,6 +117,7 @@ After downloading your manga will be at `~/.mangaScrape/Downloaded Manga` by def
 - Batch download
 - Checks for new chapters
 - Easy integration with scripts for automation
+- Downloads cover images automatically
 
 ## CONTRIBUTIONS
 
