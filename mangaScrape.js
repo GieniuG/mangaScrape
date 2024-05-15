@@ -136,7 +136,6 @@ function getChapters(url,chapter){
         })
     let index=array.length-1
     if(chapter!="a"){
-            console.log(chapter)
             let chapterArray=chapter.split("-")
             startChapter=Number(chapterArray[0])
             if(chapterArray.length>1){
@@ -317,16 +316,11 @@ async function start(passedArguments){
             case "-U":
                 await checkForUpdate()
                 if(passedArguments.includes("-D")){
-                    let step
                     for(const element of titles){
                         print(element.name)
                         prepairStructure(titles.indexOf(element))
-                        if(element.chapter[1].split(".").length>1){
-                           step=Number(element.chapter[1].split(".")[1])/10
-                        }else{
-                           step=1
-                        }
-                        await scrape(element.url,`${Number(element.chapter[0]+step)}-${element.chapter[1]}`)
+                        let chapters=await getChapters(element.url,`${Number(element.chapter[0])+0.00001}-${element.chapter[1]}`)
+                        await scrape(chapters)
                     }
                 }
                 return
