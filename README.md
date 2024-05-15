@@ -26,7 +26,7 @@
 If you're using a Chromium-based browser, you don't need to perform the next step:
 
 2. Run (while in the directory containing .js file) `npx @puppeteer/browsers install chrome-headless-shell@stable` to download the browser this program will be using.
-3. Go into `LINUX scripts/LINUX-install.sh` and remove the comments.
+3. Go into `LINUX-install.sh` and remove the comments.
    If you want to use your browser instead of downloading headless chrome, run `which browser_name` and change the `pathToBrowser` at line 15 to the output of this command. For example, for Brave:
 
    ```
@@ -40,20 +40,6 @@ If you're using a Chromium-based browser, you don't need to perform the next ste
 ```
 
 You're good to go!
-
-*Build from source:*
-
-1. Install Node.js and run
-
-```
-sudo npm install -g pkg
-```
-
-2. Run the install script to create necessary directories and files.
-3. ```
-   chmod +x LINUX-compile.sh
-   ./LINUX-compile.sh
-   ```
 
 #### WINDOWS
 
